@@ -1,0 +1,24 @@
+const tf = require('@tensorflow/tfjs');
+
+// Sample data: [features], labels
+const features = tf.tensor2d([
+    [50, 1, 3],  // Example feature vector for a phishing URL
+    [30, 0, 1]   // Example feature vector for a legitimate URL
+]);
+const labels = tf.tensor2d([
+    [1],  // Phishing
+    [0]   // Legitimate
+]);
+
+// Define a simple model
+const model = tf.sequential();
+model.add(tf.layers.dense({ units: 10, activation: 'relu', inputShape: [features.shape[1]] }));
+model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
+
+model.compile({ optimizer: 'adam', loss: 'binaryCrossentropy', metrics: ['accuracy'] });
+
+// Train the model
+model.fit(features, labels, { epochs: 10 }).then(() => {
+    // Save model
+    model.save('file://./ml/phishing_model');
+});
